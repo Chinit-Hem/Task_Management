@@ -1,0 +1,33 @@
+{
+    "dart.flutterSdkPath": "D:\\RUPP\\flutter",
+    "dart.sdkPath": "D:\\RUPP\\flutter\\bin\\cache\\dart-sdk",
+    "android.sdkPath": "C:\\Android\\Sdk",
+    "dart.env": {
+        "ANDROID_SDK_ROOT": "C:\\Android\\Sdk",
+        "ANDROID_HOME": "C:\\Android\\Sdk"
+    },
+    "flutter emulator": "Pixel_9_Pro",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/node_modules": true,
+        "**/build": true
+    },
+    "editor.formatOnSave": true,
+    "editor.rulers": [
+        80
+    ],
+    "dart.lineLength": 80,
+    "[dart]": {
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.rulers": [
+            80
+        ],
+        "editor.selectionHighlight": false,
+        "editor.suggest.snippetsPreventQuickSuggestions": false,
+        "editor.suggestSelection": "first",
+        "editor.tabCompletion": "onlySnippets",
+        "editor.wordBasedSuggestions": "off"
+    }
+}
