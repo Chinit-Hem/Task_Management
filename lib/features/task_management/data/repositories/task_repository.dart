@@ -1,6 +1,5 @@
 import 'package:isar/isar.dart';
 import 'package:flutter/foundation.dart';
-import '../../../../core/providers/database_provider.dart';
 import '../../domain/models/task_model.dart';
 
 class TaskRepository {

@@ -50,7 +50,8 @@ class _ListScreenState extends ConsumerState<ListScreen>
 
   @override
   Widget build(BuildContext context) {
-    final filteredTasksAsync = ref.watch(filteredTasksProvider);
+    final filteredTasksAsync = ref.watch(filteredTasksStreamProvider);
+    final statsAsync = ref.watch(taskStatsStreamProvider);
     final taskNotifier = ref.read(taskNotifierProvider.notifier);
 
     return Scaffold(
@@ -83,25 +84,20 @@ class _ListScreenState extends ConsumerState<ListScreen>
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final statsAsync = ref.watch(taskStatsProvider);
-                      return statsAsync.when(
-                        data: (stats) => Text(
-                          '${stats.total} tasks total',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        loading: () => const SizedBox(
-                          height: 14,
-                          width: 100,
-                          child: LinearProgressIndicator(),
-                        ),
-                        error: (_, __) => const SizedBox.shrink(),
-                      );
-                    },
+                  statsAsync.when(
+                    data: (stats) => Text(
+                      '${stats.total} tasks total · ${stats.completed} completed',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    loading: () => const SizedBox(
+                      height: 14,
+                      width: 100,
+                      child: LinearProgressIndicator(),
+                    ),
+                    error: (_, __) => const SizedBox.shrink(),
                   ),
                 ],
               ),
@@ -213,19 +209,22 @@ class _ListScreenState extends ConsumerState<ListScreen>
                       return TaskCard(
                         task: task,
                         onToggle: () {
+                          // Capture current state BEFORE toggle for correct message
+                          final wasCompleted = task.isCompleted;
                           taskNotifier.toggleTaskCompletion(task.id);
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          final messenger = ScaffoldMessenger.of(context);
+                          messenger.clearSnackBars();
+                          messenger.showSnackBar(
                             SnackBar(
                               content: Text(
-                                task.isCompleted
-                                    ? 'Task marked as pending'
-                                    : 'Task marked as complete',
+                                wasCompleted
+                                    ? '↩ Task marked as pending'
+                                    : '✓ Task marked as complete',
                               ),
                               duration: const Duration(seconds: 2),
                               behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
+                              backgroundColor:
+                                  wasCompleted ? Colors.orange : Colors.green,
                             ),
                           );
                         },
@@ -233,7 +232,6 @@ class _ListScreenState extends ConsumerState<ListScreen>
                           context.push('/task-detail/${task.id}', extra: task);
                         },
                       );
-
                     },
                   );
                 },
@@ -255,7 +253,8 @@ class _ListScreenState extends ConsumerState<ListScreen>
                       ),
                       const SizedBox(height: 8),
                       ElevatedButton(
-                        onPressed: () => ref.invalidate(filteredTasksProvider),
+                        onPressed: () =>
+                            ref.invalidate(filteredTasksStreamProvider),
                         child: const Text('Retry'),
                       ),
                     ],

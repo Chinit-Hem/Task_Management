@@ -299,7 +299,7 @@ class TaskDetailScreen extends ConsumerWidget {
                       value: subtaskProgress,
                       backgroundColor: Colors.grey.shade200,
                       valueColor:
-                          AlwaysStoppedAnimation<Color>(AppColors.primary),
+                          const AlwaysStoppedAnimation<Color>(AppColors.primary),
                       minHeight: 8,
                       borderRadius: BorderRadius.circular(4),
                     ),

@@ -121,6 +121,92 @@ Future<List<TaskModel>> tasksByDateRange(
   return await repository.getTasksByDateRange(start, end);
 }
 
+/// Stream-based filtered tasks provider — auto-updates on every Isar change.
+/// Used by ListScreen so checkbox toggles reflect instantly without manual invalidation.
+final filteredTasksStreamProvider =
+    StreamProvider.autoDispose<List<TaskModel>>((ref) {
+  final searchQuery = ref.watch(searchQueryProvider);
+  final filter = ref.watch(taskFilterProvider);
+  final repositoryAsync = ref.watch(taskRepositoryProvider);
+
+  return repositoryAsync.when(
+    data: (repository) {
+      return repository.watchAllTasks().map((allTasks) {
+        // Apply tab filter
+        List<TaskModel> tasks;
+        switch (filter) {
+          case TaskFilter.pending:
+            tasks = allTasks.where((t) => !t.isCompleted).toList();
+            break;
+          case TaskFilter.completed:
+            tasks = allTasks.where((t) => t.isCompleted).toList();
+            break;
+          case TaskFilter.all:
+          default:
+            tasks = List.from(allTasks);
+            break;
+        }
+
+        // Apply search filter
+        if (searchQuery.isNotEmpty) {
+          final query = searchQuery.toLowerCase();
+          tasks = tasks.where((task) {
+            return task.title.toLowerCase().contains(query) ||
+                (task.description?.toLowerCase().contains(query) ?? false);
+          }).toList();
+        }
+
+        // Sort: pending first, then by priority (high→low), then by due date
+        tasks.sort((a, b) {
+          if (a.isCompleted != b.isCompleted) {
+            return a.isCompleted ? 1 : -1;
+          }
+          final priorityCompare = b.priority.index.compareTo(a.priority.index);
+          if (priorityCompare != 0) return priorityCompare;
+          if (a.dueDate != null && b.dueDate != null) {
+            return a.dueDate!.compareTo(b.dueDate!);
+          }
+          if (a.dueDate != null) return -1;
+          if (b.dueDate != null) return 1;
+          return 0;
+        });
+
+        return tasks;
+      });
+    },
+    loading: () => const Stream.empty(),
+    error: (_, __) => const Stream.empty(),
+  );
+});
+
+/// Stream-based today's tasks provider — auto-updates on every Isar change.
+/// Shows ALL tasks for today (both pending and completed).
+final todayTasksStreamProvider =
+    StreamProvider.autoDispose<List<TaskModel>>((ref) {
+  final repositoryAsync = ref.watch(taskRepositoryProvider);
+
+  return repositoryAsync.when(
+    data: (repository) => repository.watchTodayTasks(),
+    loading: () => const Stream.empty(),
+    error: (_, __) => const Stream.empty(),
+  );
+});
+
+/// Stream-based task stats provider — auto-updates on every Isar change.
+final taskStatsStreamProvider = StreamProvider.autoDispose<TaskStats>((ref) {
+  final repositoryAsync = ref.watch(taskRepositoryProvider);
+
+  return repositoryAsync.when(
+    data: (repository) {
+      return repository.watchAllTasks().asyncMap((_) async {
+        return await repository.getTaskStats();
+      });
+    },
+    loading: () => const Stream.empty(),
+    error: (_, __) => const Stream.empty(),
+  );
+});
+
 /// Task notifier for CRUD operations
 class TaskNotifier extends StateNotifier<AsyncValue<void>> {
   final Ref _ref;

@@ -68,13 +68,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text(
+          const SnackBar(
+            content: Text(
               'Sign up done! Please sign in to continue.',
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
+            duration: Duration(seconds: 2),
           ),
         );
 

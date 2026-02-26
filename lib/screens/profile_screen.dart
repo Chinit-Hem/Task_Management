@@ -356,7 +356,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               _notifications = value;
                             });
                           },
-                          activeColor: AppColors.primary,
+                          activeThumbColor: AppColors.primary,
                         ),
                       ),
                       _buildSettingsTile(
@@ -370,7 +370,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               _darkMode = value;
                             });
                           },
-                          activeColor: AppColors.primary,
+                          activeThumbColor: AppColors.primary,
                         ),
                       ),
                       _buildSettingsTile(

@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../application/providers/task_providers.dart';
 import '../widgets/task_card.dart';
-import '../widgets/priority_chip.dart';
 
 /// HomeScreen - Dashboard with greeting, stats, and today's tasks
 ///
@@ -37,8 +36,8 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final todayTasksAsync = ref.watch(todayTasksProvider);
-    final statsAsync = ref.watch(taskStatsProvider);
+    final todayTasksAsync = ref.watch(todayTasksStreamProvider);
+    final statsAsync = ref.watch(taskStatsStreamProvider);
     final taskNotifier = ref.read(taskNotifierProvider.notifier);
 
     return Scaffold(
@@ -235,24 +234,25 @@ class HomeScreen extends ConsumerWidget {
                         return TaskCard(
                           task: task,
                           onToggle: () {
+                            final wasCompleted = task.isCompleted;
                             taskNotifier.toggleTaskCompletion(task.id);
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            final messenger = ScaffoldMessenger.of(context);
+                            messenger.clearSnackBars();
+                            messenger.showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  task.isCompleted
-                                      ? 'Task marked as pending'
-                                      : 'Task marked as complete',
+                                  wasCompleted
+                                      ? '↩ Task marked as pending'
+                                      : '✓ Task marked as complete',
                                 ),
                                 duration: const Duration(seconds: 2),
                                 behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
+                                backgroundColor:
+                                    wasCompleted ? Colors.orange : Colors.green,
                               ),
                             );
                           },
                         );
-
                       },
                       childCount: tasks.length,
                     ),

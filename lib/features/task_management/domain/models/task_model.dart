@@ -1,5 +1,4 @@
 import 'package:isar/isar.dart';
-import 'package:flutter/foundation.dart';
 
 part 'task_model.g.dart';
 

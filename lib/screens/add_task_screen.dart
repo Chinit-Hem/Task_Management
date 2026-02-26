@@ -518,7 +518,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           ),
           child: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.add,
                 color: AppColors.primary,
                 size: 20,

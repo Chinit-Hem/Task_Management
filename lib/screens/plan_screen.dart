@@ -132,7 +132,7 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
-                    markerDecoration: BoxDecoration(
+                    markerDecoration: const BoxDecoration(
                       color: AppColors.primary,
                       shape: BoxShape.circle,
                     ),
