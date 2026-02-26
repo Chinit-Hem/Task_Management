@@ -18,7 +18,7 @@ Future<Isar> database(DatabaseRef ref) async {
       UserModelSchema,
     ],
     directory: dir.path,
-    inspector: true,
+    inspector: kDebugMode, // Only enable inspector in debug mode, not release
   );
 
   if (kDebugMode) {

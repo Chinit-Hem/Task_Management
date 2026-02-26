@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider;
@@ -7,16 +9,82 @@ import 'core/theme/app_theme.dart';
 import 'providers/user_session_provider.dart';
 import 'providers/theme_provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Firebase
+  await Firebase.initializeApp();
+
+  // Catch Flutter framework errors and show on screen
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    _showErrorApp(details.exceptionAsString(), details.stack.toString());
+  };
+
+  runZonedGuarded(
+    () {
+      runApp(
+        provider.MultiProvider(
+          providers: [
+            provider.ChangeNotifierProvider(
+                create: (_) => UserSessionProvider()),
+            provider.ChangeNotifierProvider(create: (_) => ThemeProvider()),
+          ],
+          child: const ProviderScope(child: MyApp()),
+        ),
+      );
+    },
+    (error, stackTrace) {
+      debugPrint('Uncaught error: $error\n$stackTrace');
+      _showErrorApp(error.toString(), stackTrace.toString());
+    },
+  );
+}
+
+void _showErrorApp(String error, String stackTrace) {
   runApp(
-    provider.MultiProvider(
-      providers: [
-        provider.ChangeNotifierProvider(create: (_) => UserSessionProvider()),
-        provider.ChangeNotifierProvider(create: (_) => ThemeProvider()),
-      ],
-      child: const ProviderScope(child: MyApp()),
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.red, size: 32),
+                    SizedBox(width: 8),
+                    Text(
+                      'App Error (show to developer)',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: SelectableText(
+                      'ERROR:\n$error\n\nSTACK:\n$stackTrace',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontFamily: 'monospace',
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     ),
   );
 }
@@ -78,7 +146,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   Widget build(BuildContext context) {
     // Show loading while checking auth
     if (_isLoading) {
-      return MaterialApp(
+      return const MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
           backgroundColor: Colors.white, // Ensure white background
@@ -87,8 +155,8 @@ class _MyAppState extends ConsumerState<MyApp> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircularProgressIndicator(color: AppColors.primary),
-                const SizedBox(height: 16),
-                const Text(
+                SizedBox(height: 16),
+                Text(
                   'Loading...',
                   style: TextStyle(color: Colors.black87),
                 ),
