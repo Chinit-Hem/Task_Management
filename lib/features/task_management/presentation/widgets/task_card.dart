@@ -55,37 +55,41 @@ class TaskCard extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            // Checkbox - independent tap
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: onToggle,
-                borderRadius: BorderRadius.circular(6),
-                child: Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: task.isCompleted ? Colors.green : Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: task.isCompleted
-                          ? Colors.green
-                          : Colors.grey.shade400,
-                      width: 2,
+            // Checkbox - independent tap with 48x48 touch target
+            GestureDetector(
+              onTap: onToggle,
+              behavior: HitTestBehavior.opaque,
+              child: SizedBox(
+                width: 48,
+                height: 48,
+                child: Center(
+                  child: Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color:
+                          task.isCompleted ? Colors.green : Colors.transparent,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: task.isCompleted
+                            ? Colors.green
+                            : Colors.grey.shade400,
+                        width: 2,
+                      ),
                     ),
+                    child: task.isCompleted
+                        ? const Icon(
+                            Icons.check,
+                            size: 16,
+                            color: Colors.white,
+                          )
+                        : null,
                   ),
-                  child: task.isCompleted
-                      ? const Icon(
-                          Icons.check,
-                          size: 16,
-                          color: Colors.white,
-                        )
-                      : null,
                 ),
               ),
             ),
             const SizedBox(width: 12),
-            
+
             // Image (optional)
             if (showImage &&
                 task.imagePath != null &&
@@ -96,7 +100,7 @@ class TaskCard extends StatelessWidget {
               ),
               const SizedBox(width: 12),
             ],
-            
+
             // Content - with tap gesture
             Expanded(
               child: GestureDetector(
