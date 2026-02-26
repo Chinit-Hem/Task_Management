@@ -69,17 +69,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'Welcome, ${_nameController.text}! Account created successfully.',
-              style: const TextStyle(fontWeight: FontWeight.w600),
+            content: const Text(
+              'Sign up done! Please sign in to continue.',
+              style: TextStyle(fontWeight: FontWeight.w600),
             ),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
         );
 
-        // Navigate to home
-        context.go(AppRouter.home);
+        // Navigate to login screen
+        context.go(AppRouter.login);
+
       }
     }
   }

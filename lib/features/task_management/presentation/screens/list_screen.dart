@@ -212,12 +212,28 @@ class _ListScreenState extends ConsumerState<ListScreen>
                       final task = tasks[index];
                       return TaskCard(
                         task: task,
-                        onToggle: () =>
-                            taskNotifier.toggleTaskCompletion(task.id),
+                        onToggle: () {
+                          taskNotifier.toggleTaskCompletion(task.id);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                task.isCompleted
+                                    ? 'Task marked as pending'
+                                    : 'Task marked as complete',
+                              ),
+                              duration: const Duration(seconds: 2),
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          );
+                        },
                         onTap: () {
                           context.push('/task-detail/${task.id}', extra: task);
                         },
                       );
+
                     },
                   );
                 },

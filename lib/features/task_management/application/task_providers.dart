@@ -156,13 +156,14 @@ class TaskNotifier extends _$TaskNotifier {
       ref.invalidate(taskStatsProvider);
 
       return true;
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error adding task: $e');
-      }
+    } catch (e, stackTrace) {
+      // Log error in all modes for debugging
+      print('ERROR adding task: $e');
+      print('Stack trace: $stackTrace');
       return false;
     }
   }
+
 
   /// Update an existing task
   Future<bool> updateTask(TaskModel task) async {

@@ -13,30 +13,21 @@ import '../features/task_management/domain/models/task_model.dart';
 import '../features/task_management/presentation/widgets/priority_chip.dart';
 
 /// AddTaskScreen - Create or edit a task
-///
-/// Features:
-/// - Title TextField (required)
-/// - Description multiline
-/// - Date & Time picker for due
-/// - Priority selector: 3 buttons (Low/Medium/High)
-/// - Category chips (selectable, single)
-/// - Image: upload button → image_picker → save local path
-/// - Subtasks: dynamic list with add/remove text fields
-/// - Bottom blue Save button → save/update to Isar
-/// - For edit: prefill from Task object
-class AddTaskScreen extends ConsumerStatefulWidget {
+class AddTaskScreen extends StatefulWidget {
   final TaskModel? taskToEdit;
+  final DateTime? preselectedDate;
 
   const AddTaskScreen({
     super.key,
     this.taskToEdit,
+    this.preselectedDate,
   });
 
   @override
-  ConsumerState<AddTaskScreen> createState() => _AddTaskScreenState();
+  State<AddTaskScreen> createState() => _AddTaskScreenState();
 }
 
-class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
+class _AddTaskScreenState extends State<AddTaskScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -58,6 +49,8 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
     super.initState();
     if (_isEditing) {
       _prefillForm();
+    } else if (widget.preselectedDate != null) {
+      _dueDate = widget.preselectedDate;
     }
   }
 
@@ -83,6 +76,14 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
     super.dispose();
   }
 
+  String _formatTime(TimeOfDay? time) {
+    if (time == null) return 'Select Time';
+    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+    return '$hour:$minute $period';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,7 +93,11 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            if (mounted) {
+              Navigator.of(context).maybePop();
+            }
+          },
         ),
         title: Text(
           _isEditing ? 'Edit Task' : 'Add New Task',
@@ -105,9 +110,13 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
         centerTitle: true,
         actions: [
           if (_isEditing)
-            IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
-              onPressed: _confirmDelete,
+            Consumer(
+              builder: (context, ref, child) {
+                return IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  onPressed: () => _confirmDelete(context, ref),
+                );
+              },
             ),
         ],
       ),
@@ -269,27 +278,31 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
             const SizedBox(height: 32),
 
             // Save Button
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: _saveTask,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+            Consumer(
+              builder: (context, ref, child) {
+                return SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: () => _saveTask(context, ref),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      _isEditing ? 'Update Task' : 'Save Task',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  _isEditing ? 'Update Task' : 'Save Task',
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+                );
+              },
             ),
 
             const SizedBox(height: 32),
@@ -348,6 +361,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
 
   /// Build time picker button
   Widget _buildTimePicker() {
+    final timeString = _formatTime(_dueTime);
     return GestureDetector(
       onTap: _pickTime,
       child: Container(
@@ -366,7 +380,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                _dueTime != null ? _dueTime!.format(context) : 'Select Time',
+                timeString,
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   color: _dueTime != null ? AppColors.textPrimary : Colors.grey,
@@ -619,79 +633,112 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
   }
 
   /// Save task
-  Future<void> _saveTask() async {
+  Future<void> _saveTask(BuildContext context, WidgetRef ref) async {
     if (!_formKey.currentState!.validate()) {
+      print('FORM VALIDATION FAILED');
       return;
     }
 
-    // Combine date and time
-    DateTime? finalDueDate;
-    if (_dueDate != null) {
-      finalDueDate = _dueDate;
-      if (_dueTime != null) {
-        finalDueDate = DateTime(
-          _dueDate!.year,
-          _dueDate!.month,
-          _dueDate!.day,
-          _dueTime!.hour,
-          _dueTime!.minute,
+    print('SAVING TASK: Starting save process...');
+
+    try {
+      // Combine date and time
+      DateTime? finalDueDate;
+      if (_dueDate != null) {
+        finalDueDate = _dueDate;
+        if (_dueTime != null) {
+          finalDueDate = DateTime(
+            _dueDate!.year,
+            _dueDate!.month,
+            _dueDate!.day,
+            _dueTime!.hour,
+            _dueTime!.minute,
+          );
+        }
+      }
+
+      print('SAVING TASK: Creating task object...');
+      print('  Title: ${_titleController.text.trim()}');
+      print('  Category: $_selectedCategory');
+      print('  Priority: $_selectedPriority');
+
+      final task = _isEditing
+          ? widget.taskToEdit!.copyWith(
+              title: _titleController.text.trim(),
+              description: _descriptionController.text.trim(),
+              priority: _selectedPriority,
+              category: _selectedCategory,
+              dueDate: finalDueDate,
+              imagePath: _imagePath,
+              subtasks: List.from(_subtasks),
+            )
+          : TaskModel.create(
+              title: _titleController.text.trim(),
+              description: _descriptionController.text.trim(),
+              priority: _selectedPriority,
+              category: _selectedCategory,
+              dueDate: finalDueDate,
+              imagePath: _imagePath,
+              subtasks: List.from(_subtasks),
+            );
+
+      print('SAVING TASK: Calling ${_isEditing ? "updateTask" : "addTask"}...');
+
+      final success = _isEditing
+          ? await ref.read(taskNotifierProvider.notifier).updateTask(task)
+          : await ref.read(taskNotifierProvider.notifier).addTask(task);
+
+      print('SAVING TASK: Result = $success');
+
+      if (success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              _isEditing
+                  ? 'Task updated successfully!'
+                  : 'Task added successfully!',
+              style: GoogleFonts.inter(),
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        if (mounted) {
+          Navigator.of(context).maybePop();
+        }
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Failed to save task. Check logs for details.',
+              style: GoogleFonts.inter(),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
         );
       }
-    }
-
-    final task = _isEditing
-        ? widget.taskToEdit!.copyWith(
-            title: _titleController.text.trim(),
-            description: _descriptionController.text.trim(),
-            priority: _selectedPriority,
-            category: _selectedCategory,
-            dueDate: finalDueDate,
-            imagePath: _imagePath,
-            subtasks: List.from(_subtasks),
-          )
-        : TaskModel.create(
-            title: _titleController.text.trim(),
-            description: _descriptionController.text.trim(),
-            priority: _selectedPriority,
-            category: _selectedCategory,
-            dueDate: finalDueDate,
-            imagePath: _imagePath,
-            subtasks: List.from(_subtasks),
-          );
-
-    final success = _isEditing
-        ? await ref.read(taskNotifierProvider.notifier).updateTask(task)
-        : await ref.read(taskNotifierProvider.notifier).addTask(task);
-
-    if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isEditing
-                ? 'Task updated successfully!'
-                : 'Task added successfully!',
-            style: GoogleFonts.inter(),
+    } catch (e, stackTrace) {
+      print('ERROR in _saveTask: $e');
+      print('Stack trace: $stackTrace');
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error: $e',
+              style: GoogleFonts.inter(),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
           ),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-      context.pop();
-    } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Failed to save task. Please try again.',
-            style: GoogleFonts.inter(),
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
+        );
+      }
     }
   }
 
   /// Confirm delete
-  Future<void> _confirmDelete() async {
+  Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -727,21 +774,27 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
     );
 
     if (confirmed == true && mounted) {
-      final success = await ref
-          .read(taskNotifierProvider.notifier)
-          .deleteTask(widget.taskToEdit!.id);
+      try {
+        final success = await ref
+            .read(taskNotifierProvider.notifier)
+            .deleteTask(widget.taskToEdit!.id);
 
-      if (success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Task deleted successfully',
-              style: GoogleFonts.inter(),
+        if (success && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Task deleted successfully',
+                style: GoogleFonts.inter(),
+              ),
+              backgroundColor: Colors.green,
             ),
-            backgroundColor: Colors.green,
-          ),
-        );
-        context.pop();
+          );
+          if (mounted) {
+            Navigator.of(context).maybePop();
+          }
+        }
+      } catch (e) {
+        print('Error deleting task: $e');
       }
     }
   }

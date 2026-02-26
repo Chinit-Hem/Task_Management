@@ -101,8 +101,13 @@ class AppRouter {
         GoRoute(
           path: addTask,
           name: 'add-task',
-          builder: (context, state) => const AddTaskScreen(),
+          builder: (context, state) {
+            final dateStr = state.uri.queryParameters['date'];
+            final preselectedDate = dateStr != null ? DateTime.tryParse(dateStr) : null;
+            return AddTaskScreen(preselectedDate: preselectedDate);
+          },
         ),
+
         GoRoute(
           path: '$editTask/:id',
           name: 'edit-task',

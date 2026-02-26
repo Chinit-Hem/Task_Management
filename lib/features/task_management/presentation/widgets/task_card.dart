@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../domain/models/task_model.dart';
-
 import 'priority_chip.dart';
 
 class TaskCard extends StatelessWidget {
@@ -33,36 +32,35 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap ??
-          () {
-            context.push('/task-detail/${task.id}', extra: task);
-          },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border(
-            left: BorderSide(
-              color: _priorityColor,
-              width: 4,
-            ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border(
+          left: BorderSide(
+            color: _priorityColor,
+            width: 4,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              GestureDetector(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            // Checkbox - independent tap
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
                 onTap: onToggle,
+                borderRadius: BorderRadius.circular(6),
                 child: Container(
                   width: 24,
                   height: 24,
@@ -85,17 +83,27 @@ class TaskCard extends StatelessWidget {
                       : null,
                 ),
               ),
+            ),
+            const SizedBox(width: 12),
+            
+            // Image (optional)
+            if (showImage &&
+                task.imagePath != null &&
+                task.imagePath!.isNotEmpty) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: _buildImage(),
+              ),
               const SizedBox(width: 12),
-              if (showImage &&
-                  task.imagePath != null &&
-                  task.imagePath!.isNotEmpty) ...[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: _buildImage(),
-                ),
-                const SizedBox(width: 12),
-              ],
-              Expanded(
+            ],
+            
+            // Content - with tap gesture
+            Expanded(
+              child: GestureDetector(
+                onTap: onTap ??
+                    () {
+                      context.push('/task-detail/${task.id}', extra: task);
+                    },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -164,8 +172,8 @@ class TaskCard extends StatelessWidget {
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
