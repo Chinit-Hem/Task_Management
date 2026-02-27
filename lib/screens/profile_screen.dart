@@ -33,7 +33,12 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _nameController = TextEditingController(text: 'Chinit Hem');
   final _emailController = TextEditingController(text: 'chinithem81@gmail.com');
+<<<<<<< HEAD
   final _phoneController = TextEditingController(text: '+855 123 456 789');
+=======
+  final _phoneController = TextEditingController(text: '+855 011 311 161');
+
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
   final _locationController =
       TextEditingController(text: 'Phnom Penh, Cambodia');
   final _bioController = TextEditingController(
@@ -396,6 +401,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           context.push('/privacy');
                         },
                       ),
+<<<<<<< HEAD
                       _buildSettingsTile(
                         icon: Icons.edit,
                         title: 'Edit Profile',
@@ -405,6 +411,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         },
                       ),
 
+=======
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
                     ],
                   ),
                 ),
@@ -763,7 +771,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 user.email.isNotEmpty ? user.email : 'chinithem81@gmail.com';
             _phoneController.text = (user.phone?.isNotEmpty ?? false)
                 ? user.phone!
+<<<<<<< HEAD
                 : '+855 123 456 789';
+=======
+                : '+855 011 311 161';
+
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
           }
           // These fields are always loaded from Isar (not in session)
           _locationController.text = (user.location?.isNotEmpty ?? false)

@@ -234,9 +234,31 @@ class HomeScreen extends ConsumerWidget {
                         final task = tasks[index];
                         return TaskCard(
                           task: task,
+<<<<<<< HEAD
                           onToggle: () =>
                               taskNotifier.toggleTaskCompletion(task.id),
                         );
+=======
+                          onToggle: () {
+                            taskNotifier.toggleTaskCompletion(task.id);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  task.isCompleted
+                                      ? 'Task marked as pending'
+                                      : 'Task marked as complete',
+                                ),
+                                duration: const Duration(seconds: 2),
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
                       },
                       childCount: tasks.length,
                     ),

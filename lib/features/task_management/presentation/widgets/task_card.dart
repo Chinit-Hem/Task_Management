@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../domain/models/task_model.dart';
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
 import 'priority_chip.dart';
 
 class TaskCard extends StatelessWidget {
@@ -33,6 +36,7 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return GestureDetector(
       onTap: onTap ??
           () {
@@ -63,6 +67,37 @@ class TaskCard extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: onToggle,
+=======
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border(
+          left: BorderSide(
+            color: _priorityColor,
+            width: 4,
+          ),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            // Checkbox - independent tap
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onToggle,
+                borderRadius: BorderRadius.circular(6),
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
                 child: Container(
                   width: 24,
                   height: 24,
@@ -85,6 +120,7 @@ class TaskCard extends StatelessWidget {
                       : null,
                 ),
               ),
+<<<<<<< HEAD
               const SizedBox(width: 12),
               if (showImage &&
                   task.imagePath != null &&
@@ -96,6 +132,29 @@ class TaskCard extends StatelessWidget {
                 const SizedBox(width: 12),
               ],
               Expanded(
+=======
+            ),
+            const SizedBox(width: 12),
+            
+            // Image (optional)
+            if (showImage &&
+                task.imagePath != null &&
+                task.imagePath!.isNotEmpty) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: _buildImage(),
+              ),
+              const SizedBox(width: 12),
+            ],
+            
+            // Content - with tap gesture
+            Expanded(
+              child: GestureDetector(
+                onTap: onTap ??
+                    () {
+                      context.push('/task-detail/${task.id}', extra: task);
+                    },
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -164,8 +223,13 @@ class TaskCard extends StatelessWidget {
                   ],
                 ),
               ),
+<<<<<<< HEAD
             ],
           ),
+=======
+            ),
+          ],
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
         ),
       ),
     );

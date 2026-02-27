@@ -167,7 +167,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
               bulletPoints: [
                 'Email: privacy@taskmanager.com',
                 'Address: Phnom Penh, Cambodia',
+<<<<<<< HEAD
                 'Phone: +855 123 456 789',
+=======
+                'Phone: +855 011 311 161',
+
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
                 'Data Protection Officer: Chinit Hem',
               ],
             ),

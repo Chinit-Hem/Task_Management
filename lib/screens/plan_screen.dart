@@ -98,7 +98,16 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
                       _selectedDay = selectedDay;
                       _focusedDay = focusedDay;
                     });
+<<<<<<< HEAD
                   },
+=======
+                    // Navigate to add task with selected date
+                    final dateStr = selectedDay.toIso8601String();
+                    context.push('/add-task?date=$dateStr');
+                  },
+
+
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
                   onFormatChanged: (format) {
                     setState(() {
                       _calendarFormat = format;
@@ -273,8 +282,19 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           // Pre-fill due date with selected day
+<<<<<<< HEAD
           context.push('/add-task');
         },
+=======
+          final dateStr = _selectedDay?.toIso8601String();
+          if (dateStr != null) {
+            context.push('/add-task?date=$dateStr');
+          } else {
+            context.push('/add-task');
+          }
+        },
+
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
         backgroundColor: AppColors.primary,
         icon: const Icon(Icons.add, color: Colors.white),
         label: Text(

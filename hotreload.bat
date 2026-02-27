@@ -1,0 +1,3 @@
+@echo off
+echo Sending hot reload trigger...
+echo r

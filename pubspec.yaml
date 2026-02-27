@@ -38,10 +38,20 @@ dependencies:
   
   # Local Storage
   shared_preferences: ^2.2.2
+<<<<<<< HEAD
+=======
+  
+  # Google Sign In
+  google_sign_in: ^6.2.1
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
 
 
 dev_dependencies:
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
@@ -55,3 +65,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+<<<<<<< HEAD
+=======
+  
+  assets:
+    - assets/images/
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62

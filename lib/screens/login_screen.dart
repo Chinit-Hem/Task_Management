@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+<<<<<<< HEAD
+=======
+import 'package:google_sign_in/google_sign_in.dart';
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
 import '../core/routes/app_router.dart';
 import '../utils/constants.dart';
 import '../providers/user_session_provider.dart';
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -16,6 +24,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
   bool _obscurePassword = true;
   bool _isLoading = false;
 
@@ -48,6 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
         final sessionProvider = context.read<UserSessionProvider>();
 
         if (email.contains('@') && password.length >= 6) {
+<<<<<<< HEAD
           // Save session with email only (name will be loaded from profile)
           await sessionProvider.saveSession(
             email: email,
@@ -62,13 +75,34 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               backgroundColor: Colors.green,
               duration: Duration(seconds: 2),
+=======
+          // Save session with email
+          await sessionProvider.saveSession(
+            email: email,
+            name: 'User',
+          );
+
+
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Welcome back, ${sessionProvider.name ?? "Chinit Hem"}!',
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
             ),
           );
 
           // Navigate to home using go_router
           context.go(AppRouter.home);
         } else {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
           // Show error
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -85,7 +119,69 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+<<<<<<< HEAD
   void _showSignUpPrompt() {
+=======
+  void _signInWithGoogle() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+      );
+
+      final GoogleSignInAccount? account = await googleSignIn.signIn();
+
+      if (account != null && mounted) {
+        // Save session with Google account info
+        final sessionProvider = context.read<UserSessionProvider>();
+        await sessionProvider.saveSession(
+          email: account.email,
+          name: account.displayName ?? 'Google User',
+        );
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Welcome, ${account.displayName ?? "User"}!',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+
+        // Navigate to home
+        context.go(AppRouter.home);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Google sign-in failed: $e',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _showSignUpPrompt() {
+
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -299,7 +395,65 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                             ),
                           ),
+<<<<<<< HEAD
                         ],
+=======
+                          const SizedBox(height: 16),
+                          // OR Divider
+                          Row(
+                            children: [
+                              Expanded(child: Divider(color: Colors.grey.shade300)),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                child: Text(
+                                  'OR',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                              Expanded(child: Divider(color: Colors.grey.shade300)),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          // Google Sign In Button
+                          SizedBox(
+                            height: 50,
+                            child: OutlinedButton.icon(
+                              onPressed: _isLoading ? null : _signInWithGoogle,
+                              icon: Image.asset(
+                                'assets/images/google_logo.png',
+                                height: 24,
+                                width: 24,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(
+                                    Icons.g_mobiledata,
+                                    color: Colors.red,
+                                    size: 28,
+                                  );
+                                },
+                              ),
+                              label: const Text(
+                                'Continue with Google',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              style: OutlinedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                side: BorderSide(color: Colors.grey.shade300),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
                       ),
                     ),
                   ),

@@ -6,7 +6,10 @@ import '../../screens/add_task_screen.dart';
 import '../../screens/task_detail_screen.dart';
 import '../../screens/plan_screen.dart';
 import '../../screens/profile_screen.dart';
+<<<<<<< HEAD
 import '../../screens/edit_profile_screen.dart';
+=======
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
 import '../../screens/main_navigation.dart';
 import '../../screens/login_screen.dart';
 import '../../screens/signup_screen.dart';
@@ -16,7 +19,10 @@ import '../../screens/help_center_screen.dart';
 import '../../screens/privacy_policy_screen.dart';
 import '../../models/task_model.dart';
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
 class AppRouter {
   AppRouter._();
 
@@ -27,7 +33,10 @@ class AppRouter {
   static const String list = '/list';
   static const String plan = '/plan';
   static const String profile = '/profile';
+<<<<<<< HEAD
   static const String editProfile = '/edit-profile';
+=======
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
   static const String addTask = '/add-task';
   static const String editTask = '/edit-task';
   static const String taskDetail = '/task-detail';
@@ -38,7 +47,10 @@ class AppRouter {
   static const String help = '/help';
   static const String privacy = '/privacy';
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
   /// Get router based on authentication status
   static GoRouter getRouter(bool isLoggedIn) {
     return GoRouter(
@@ -105,8 +117,18 @@ class AppRouter {
         GoRoute(
           path: addTask,
           name: 'add-task',
+<<<<<<< HEAD
           builder: (context, state) => const AddTaskScreen(),
         ),
+=======
+          builder: (context, state) {
+            final dateStr = state.uri.queryParameters['date'];
+            final preselectedDate = dateStr != null ? DateTime.tryParse(dateStr) : null;
+            return AddTaskScreen(preselectedDate: preselectedDate);
+          },
+        ),
+
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
         GoRoute(
           path: '$editTask/:id',
           name: 'edit-task',
@@ -143,6 +165,7 @@ class AppRouter {
           name: 'privacy',
           builder: (context, state) => const PrivacyPolicyScreen(),
         ),
+<<<<<<< HEAD
         GoRoute(
           path: editProfile,
           name: 'edit-profile',
@@ -150,6 +173,9 @@ class AppRouter {
         ),
       ],
 
+=======
+      ],
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
       errorBuilder: (context, state) {
         return Scaffold(
           body: Center(

@@ -14,7 +14,13 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+<<<<<<< HEAD
   final _emailController = TextEditingController();
+=======
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
@@ -24,7 +30,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   void dispose() {
+<<<<<<< HEAD
     _emailController.dispose();
+=======
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -50,10 +62,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
       await Future.delayed(const Duration(seconds: 2));
 
       if (mounted) {
+<<<<<<< HEAD
         // Save user session with email only
         final sessionProvider = context.read<UserSessionProvider>();
         await sessionProvider.saveSession(
           email: _emailController.text.trim(),
+=======
+        // Save user session with all signup data
+        final sessionProvider = context.read<UserSessionProvider>();
+        await sessionProvider.saveSession(
+          email: _emailController.text.trim(),
+          name: _nameController.text.trim(),
+          phone: _phoneController.text.trim(),
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
         );
 
         setState(() {
@@ -63,17 +84,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
+<<<<<<< HEAD
             content: Text(
               'Account created successfully! Please sign in.',
               style: const TextStyle(fontWeight: FontWeight.w600),
+=======
+            content: const Text(
+              'Sign up done! Please sign in to continue.',
+              style: TextStyle(fontWeight: FontWeight.w600),
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
             ),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
         );
 
+<<<<<<< HEAD
         // Navigate to login screen (not home)
         context.go(AppRouter.login);
+=======
+        // Navigate to login screen
+        context.go(AppRouter.login);
+
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
       }
     }
   }
@@ -168,6 +201,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                           ),
                           const SizedBox(height: 24),
+<<<<<<< HEAD
+=======
+                          // Full Name Field
+                          TextFormField(
+                            controller: _nameController,
+                            decoration: InputDecoration(
+                              labelText: 'Full Name',
+                              hintText: 'Enter your full name',
+                              prefixIcon: const Icon(Icons.person_outline),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey.shade50,
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your name';
+                              }
+                              if (value.length < 2) {
+                                return 'Name must be at least 2 characters';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
                           // Email Field
                           TextFormField(
                             controller: _emailController,
@@ -193,6 +253,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             },
                           ),
                           const SizedBox(height: 16),
+<<<<<<< HEAD
+=======
+                          // Phone Field
+                          TextFormField(
+                            controller: _phoneController,
+                            keyboardType: TextInputType.phone,
+                            decoration: InputDecoration(
+                              labelText: 'Phone Number',
+                              hintText: 'Enter your phone number',
+                              prefixIcon: const Icon(Icons.phone_outlined),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey.shade50,
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your phone number';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
                           // Password Field
                           TextFormField(
                             controller: _passwordController,

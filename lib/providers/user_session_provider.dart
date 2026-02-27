@@ -83,6 +83,7 @@ class UserSessionProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+<<<<<<< HEAD
 
   /// Set user info (alias for updateProfile)
   /// Used by EditProfileScreen to update user information
@@ -93,4 +94,6 @@ class UserSessionProvider extends ChangeNotifier {
   }) async {
     return updateProfile(name: name, email: email, phone: phone);
   }
+=======
+>>>>>>> 9bbc3a6a66f889ad2d6e80e2cf7e89de93a01f62
 }
