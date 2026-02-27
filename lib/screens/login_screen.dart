@@ -14,7 +14,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
@@ -22,11 +21,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
+
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
@@ -49,30 +48,27 @@ class _LoginScreenState extends State<LoginScreen> {
         final sessionProvider = context.read<UserSessionProvider>();
 
         if (email.contains('@') && password.length >= 6) {
-          // Save session with email and name
-          final name = _nameController.text.trim().isNotEmpty
-              ? _nameController.text.trim()
-              : 'User';
+          // Save session with email only (name will be loaded from profile)
           await sessionProvider.saveSession(
             email: email,
-            name: name,
           );
 
           // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text(
-                'Welcome back, ${sessionProvider.name ?? "Chinit Hem"}!',
-                style: const TextStyle(fontWeight: FontWeight.w600),
+                'Welcome back!',
+                style: TextStyle(fontWeight: FontWeight.w600),
               ),
               backgroundColor: Colors.green,
-              duration: const Duration(seconds: 2),
+              duration: Duration(seconds: 2),
             ),
           );
 
           // Navigate to home using go_router
           context.go(AppRouter.home);
         } else {
+
           // Show error
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -196,23 +192,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          // Name Field (optional for returning users)
-                          TextFormField(
-                            controller: _nameController,
-                            decoration: InputDecoration(
-                              labelText: 'Name',
-                              hintText: 'Enter your name',
-                              prefixIcon: const Icon(Icons.person_outline),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey.shade50,
-                            ),
-                          ),
-
-                          const SizedBox(height: 16),
                           // Email Field
+
                           TextFormField(
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,

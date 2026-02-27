@@ -83,4 +83,14 @@ class UserSessionProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  /// Set user info (alias for updateProfile)
+  /// Used by EditProfileScreen to update user information
+  Future<void> setUserInfo({
+    String? name,
+    String? email,
+    String? phone,
+  }) async {
+    return updateProfile(name: name, email: email, phone: phone);
+  }
 }

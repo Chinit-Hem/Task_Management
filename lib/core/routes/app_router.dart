@@ -6,6 +6,7 @@ import '../../screens/add_task_screen.dart';
 import '../../screens/task_detail_screen.dart';
 import '../../screens/plan_screen.dart';
 import '../../screens/profile_screen.dart';
+import '../../screens/edit_profile_screen.dart';
 import '../../screens/main_navigation.dart';
 import '../../screens/login_screen.dart';
 import '../../screens/signup_screen.dart';
@@ -14,6 +15,7 @@ import '../../screens/security_settings_screen.dart';
 import '../../screens/help_center_screen.dart';
 import '../../screens/privacy_policy_screen.dart';
 import '../../models/task_model.dart';
+
 
 class AppRouter {
   AppRouter._();
@@ -25,6 +27,7 @@ class AppRouter {
   static const String list = '/list';
   static const String plan = '/plan';
   static const String profile = '/profile';
+  static const String editProfile = '/edit-profile';
   static const String addTask = '/add-task';
   static const String editTask = '/edit-task';
   static const String taskDetail = '/task-detail';
@@ -34,6 +37,7 @@ class AppRouter {
   static const String security = '/security';
   static const String help = '/help';
   static const String privacy = '/privacy';
+
 
   /// Get router based on authentication status
   static GoRouter getRouter(bool isLoggedIn) {
@@ -139,7 +143,13 @@ class AppRouter {
           name: 'privacy',
           builder: (context, state) => const PrivacyPolicyScreen(),
         ),
+        GoRoute(
+          path: editProfile,
+          name: 'edit-profile',
+          builder: (context, state) => const EditProfileScreen(),
+        ),
       ],
+
       errorBuilder: (context, state) {
         return Scaffold(
           body: Center(

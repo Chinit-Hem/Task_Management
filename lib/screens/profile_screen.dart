@@ -396,6 +396,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           context.push('/privacy');
                         },
                       ),
+                      _buildSettingsTile(
+                        icon: Icons.edit,
+                        title: 'Edit Profile',
+                        subtitle: 'Update your personal information',
+                        onTap: () {
+                          context.push('/edit-profile');
+                        },
+                      ),
+
                     ],
                   ),
                 ),

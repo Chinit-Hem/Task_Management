@@ -14,9 +14,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
@@ -26,9 +24,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   void dispose() {
-    _nameController.dispose();
     _emailController.dispose();
-    _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -54,12 +50,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       await Future.delayed(const Duration(seconds: 2));
 
       if (mounted) {
-        // Save user session with all signup data
+        // Save user session with email only
         final sessionProvider = context.read<UserSessionProvider>();
         await sessionProvider.saveSession(
           email: _emailController.text.trim(),
-          name: _nameController.text.trim(),
-          phone: _phoneController.text.trim(),
         );
 
         setState(() {
@@ -70,7 +64,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Welcome, ${_nameController.text}! Account created successfully.',
+              'Account created successfully! Please sign in.',
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             backgroundColor: Colors.green,
@@ -78,8 +72,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         );
 
-        // Navigate to home
-        context.go(AppRouter.home);
+        // Navigate to login screen (not home)
+        context.go(AppRouter.login);
       }
     }
   }
@@ -174,30 +168,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          // Full Name Field
-                          TextFormField(
-                            controller: _nameController,
-                            decoration: InputDecoration(
-                              labelText: 'Full Name',
-                              hintText: 'Enter your full name',
-                              prefixIcon: const Icon(Icons.person_outline),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey.shade50,
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your name';
-                              }
-                              if (value.length < 2) {
-                                return 'Name must be at least 2 characters';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 16),
                           // Email Field
                           TextFormField(
                             controller: _emailController,
@@ -218,28 +188,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               }
                               if (!value.contains('@')) {
                                 return 'Please enter a valid email';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          // Phone Field
-                          TextFormField(
-                            controller: _phoneController,
-                            keyboardType: TextInputType.phone,
-                            decoration: InputDecoration(
-                              labelText: 'Phone Number',
-                              hintText: 'Enter your phone number',
-                              prefixIcon: const Icon(Icons.phone_outlined),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey.shade50,
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your phone number';
                               }
                               return null;
                             },
