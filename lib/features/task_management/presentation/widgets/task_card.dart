@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../domain/models/task_model.dart';
-import 'priority_chip.dart';
 
+/// TaskCard - Figma-matched design
+/// Layout: [left border] [checkbox] [content: category+priority+title+time] [image thumbnail right]
 class TaskCard extends StatelessWidget {
   final TaskModel task;
   final VoidCallback? onToggle;
@@ -22,165 +23,199 @@ class TaskCard extends StatelessWidget {
   Color get _priorityColor {
     switch (task.priority) {
       case Priority.high:
-        return Colors.red;
+        return const Color(0xFFF44336); // Red
       case Priority.medium:
-        return Colors.orange;
+        return const Color(0xFFFF9800); // Orange
       case Priority.low:
-        return Colors.green;
+        return const Color(0xFF4CAF50); // Green
+    }
+  }
+
+  String get _priorityLabel {
+    switch (task.priority) {
+      case Priority.high:
+        return 'HIGH PRIORITY';
+      case Priority.medium:
+        return 'MEDIUM PRIORITY';
+      case Priority.low:
+        return 'LOW PRIORITY';
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final hasImage =
+        showImage && task.imagePath != null && task.imagePath!.isNotEmpty;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border(
-          left: BorderSide(
-            color: _priorityColor,
-            width: 4,
-          ),
+          left: BorderSide(color: _priorityColor, width: 4),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            // Checkbox - independent tap with 48x48 touch target
-            GestureDetector(
-              onTap: onToggle,
-              behavior: HitTestBehavior.opaque,
-              child: SizedBox(
-                width: 48,
-                height: 48,
-                child: Center(
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color:
-                          task.isCompleted ? Colors.green : Colors.transparent,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                        color: task.isCompleted
-                            ? Colors.green
-                            : Colors.grey.shade400,
-                        width: 2,
-                      ),
-                    ),
-                    child: task.isCompleted
-                        ? const Icon(
-                            Icons.check,
-                            size: 16,
-                            color: Colors.white,
-                          )
-                        : null,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-
-            // Image (optional)
-            if (showImage &&
-                task.imagePath != null &&
-                task.imagePath!.isNotEmpty) ...[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: _buildImage(),
-              ),
-              const SizedBox(width: 12),
-            ],
-
-            // Content - with tap gesture
-            Expanded(
-              child: GestureDetector(
-                onTap: onTap ??
-                    () {
-                      context.push('/task-detail/${task.id}', extra: task);
-                    },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            task.category,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w500,
-                            ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap ??
+              () => context.push('/task-detail/${task.id}', extra: task),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Checkbox - 48x48 tap area
+                GestureDetector(
+                  onTap: onToggle,
+                  behavior: HitTestBehavior.opaque,
+                  child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Center(
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          color: task.isCompleted
+                              ? _priorityColor
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
+                            color: task.isCompleted
+                                ? _priorityColor
+                                : Colors.grey.shade400,
+                            width: 2,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        PriorityChip(
-                          priority: task.priority,
-                          compact: true,
-                          showLabel: false,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      task.title,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: task.isCompleted
-                            ? Colors.grey
-                            : AppColors.textPrimary,
-                        decoration: task.isCompleted
-                            ? TextDecoration.lineThrough
+                        child: task.isCompleted
+                            ? const Icon(Icons.check,
+                                size: 14, color: Colors.white)
                             : null,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          size: 14,
-                          color: Colors.grey.shade500,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${task.formattedDueDate}${task.formattedDueTime.isNotEmpty ? ', ${task.formattedDueTime}' : ''}',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                const SizedBox(width: 10),
+
+                // Content
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Category badge + Priority badge row
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              task.category,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: _priorityColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              _priorityLabel,
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: _priorityColor,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+
+                      // Task title
+                      Text(
+                        task.title,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: task.isCompleted
+                              ? Colors.grey.shade500
+                              : AppColors.textPrimary,
+                          decoration: task.isCompleted
+                              ? TextDecoration.lineThrough
+                              : null,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 6),
+
+                      // Due date/time
+                      Row(
+                        children: [
+                          Icon(Icons.access_time_rounded,
+                              size: 13, color: Colors.grey.shade500),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              _buildDueText(),
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.grey.shade500),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Image thumbnail (right side)
+                if (hasImage) ...[
+                  const SizedBox(width: 10),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: _buildImage(),
+                  ),
+                ],
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  String _buildDueText() {
+    final date = task.formattedDueDate;
+    final time = task.formattedDueTime;
+    if (date.isEmpty && time.isEmpty) return 'No due date';
+    if (time.isEmpty) return 'Due $date';
+    if (date.isEmpty) return time;
+    return 'Due $date, $time';
   }
 
   Widget _buildImage() {
@@ -190,40 +225,34 @@ class TaskCard extends StatelessWidget {
     if (imagePath.startsWith('http')) {
       return Image.network(
         imagePath,
-        width: 60,
-        height: 60,
+        width: 64,
+        height: 64,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return _buildPlaceholderImage();
-        },
+        errorBuilder: (_, __, ___) => _buildPlaceholderImage(),
       );
     } else {
       return Image.file(
         File(imagePath),
-        width: 60,
-        height: 60,
+        width: 64,
+        height: 64,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return _buildPlaceholderImage();
-        },
+        errorBuilder: (_, __, ___) => _buildPlaceholderImage(),
       );
     }
   }
 
   Widget _buildPlaceholderImage() {
     return Container(
-      width: 60,
-      height: 60,
-      color: Colors.grey.shade300,
-      child: Icon(
-        Icons.image_not_supported,
-        color: Colors.grey.shade500,
-        size: 24,
-      ),
+      width: 64,
+      height: 64,
+      color: Colors.grey.shade200,
+      child: Icon(Icons.image_not_supported_outlined,
+          color: Colors.grey.shade400, size: 24),
     );
   }
 }
 
+/// TaskCardSkeleton - Loading placeholder matching Figma card layout
 class TaskCardSkeleton extends StatelessWidget {
   const TaskCardSkeleton({super.key});
 
@@ -231,72 +260,77 @@ class TaskCardSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
+        border:
+            const Border(left: BorderSide(color: Color(0xFFE0E0E0), width: 4)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2)),
         ],
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(6),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(5)),
             ),
-          ),
-          const SizedBox(width: 12),
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(12),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                          width: 60,
+                          height: 18,
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(6))),
+                      const SizedBox(width: 8),
+                      Container(
+                          width: 90,
+                          height: 18,
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(6))),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                      width: double.infinity,
+                      height: 15,
+                      decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(4))),
+                  const SizedBox(height: 6),
+                  Container(
+                      width: 100,
+                      height: 12,
+                      decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(4))),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 80,
-                  height: 20,
-                  decoration: BoxDecoration(
+            const SizedBox(width: 10),
+            Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
                     color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  width: double.infinity,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Container(
-                  width: 120,
-                  height: 14,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+                    borderRadius: BorderRadius.circular(10))),
+          ],
+        ),
       ),
     );
   }

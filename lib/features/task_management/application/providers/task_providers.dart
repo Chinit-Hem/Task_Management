@@ -5,6 +5,9 @@ import '../../../../core/providers/database_provider.dart';
 import '../../data/repositories/task_repository.dart';
 import '../../domain/models/task_model.dart';
 
+// Export TaskStats so it can be used by screens
+export '../../data/repositories/task_repository.dart' show TaskStats;
+
 part 'task_providers.g.dart';
 
 /// Task filter type for filtering tasks

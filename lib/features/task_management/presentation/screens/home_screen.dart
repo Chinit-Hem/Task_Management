@@ -6,32 +6,20 @@ import '../../../../core/theme/app_theme.dart';
 import '../../application/providers/task_providers.dart';
 import '../widgets/task_card.dart';
 
-/// HomeScreen - Dashboard with greeting, stats, and today's tasks
-///
-/// Features:
-/// - Good morning greeting + user name + date
-/// - Stats cards: Total / Completed / Pending (blue/orange colors)
-/// - Today's tasks section with ListView of task cards
-/// - Floating blue + button to add task
-/// - BottomNavigationBar with 4 items (Home active)
+/// HomeScreen - Figma-matched dashboard
+/// Layout: Avatar + greeting header, 3 stat cards, Today's Tasks list
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
-    if (hour < 12) {
-      return 'Good Morning';
-    } else if (hour < 17) {
-      return 'Good Afternoon';
-    } else {
-      return 'Good Evening';
-    }
+    if (hour < 12) return 'Good morning,';
+    if (hour < 17) return 'Good afternoon,';
+    return 'Good evening,';
   }
 
   String _getFormattedDate() {
-    final now = DateTime.now();
-    final formatter = DateFormat('EEEE, MMMM d');
-    return formatter.format(now);
+    return DateFormat('EEEE, MMMM d').format(DateTime.now());
   }
 
   @override
@@ -41,192 +29,191 @@ class HomeScreen extends ConsumerWidget {
     final taskNotifier = ref.read(taskNotifierProvider.notifier);
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: const Color(0xFFF5F6FA),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // Header with Greeting
+            // ── Header ──────────────────────────────────────────────
             SliverToBoxAdapter(
               child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+                child: Row(
                   children: [
-                    Text(
-                      _getGreeting(),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
+                    // Avatar
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.person,
+                          color: AppColors.primary, size: 24),
+                    ),
+                    const SizedBox(width: 12),
+                    // Greeting + date
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _getGreeting(),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          const Text(
+                            'Ride', // User name
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            _getFormattedDate(),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "John Doe", // TODO: Get from user provider
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.notifications_outlined,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _getFormattedDate(),
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
+                    // Notification bell
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(10),
                       ),
+                      child: const Icon(Icons.notifications_outlined,
+                          color: AppColors.primary, size: 22),
                     ),
                   ],
                 ),
               ),
             ),
 
-            // Stats Cards
-            SliverToBoxAdapter(
-              child: statsAsync.when(
-                data: (stats) => Container(
-                  margin: const EdgeInsets.all(16),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.primary,
-                        AppColors.primaryDark,
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withOpacity(0.3),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildStatItem(
-                          'Total', stats.total.toString(), Icons.list_alt),
-                      _buildStatDivider(),
-                      _buildStatItem('Completed', stats.completed.toString(),
-                          Icons.check_circle),
-                      _buildStatDivider(),
-                      _buildStatItem('Pending', stats.pending.toString(),
-                          Icons.pending_actions),
-                    ],
-                  ),
-                ),
-                loading: () => Container(
-                  margin: const EdgeInsets.all(16),
-                  padding: const EdgeInsets.all(16),
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Center(
-                    child: CircularProgressIndicator(color: Colors.white),
-                  ),
-                ),
-                error: (_, __) => const SizedBox.shrink(),
-              ),
-            ),
-
-            // Today's Tasks Header
+            // ── Stats Cards ─────────────────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                child: statsAsync.when(
+                  data: (stats) => Row(
+                    children: [
+                      _StatCard(
+                        label: 'Total',
+                        value: stats.total.toString(),
+                        icon: Icons.format_list_bulleted_rounded,
+                        iconColor: AppColors.primary,
+                        iconBg: AppColors.primary.withOpacity(0.1),
+                      ),
+                      const SizedBox(width: 12),
+                      _StatCard(
+                        label: 'Complete',
+                        value: stats.completed.toString(),
+                        icon: Icons.check_circle_outline_rounded,
+                        iconColor: const Color(0xFF4CAF50),
+                        iconBg: const Color(0xFF4CAF50).withOpacity(0.1),
+                      ),
+                      const SizedBox(width: 12),
+                      _StatCard(
+                        label: 'Pending',
+                        value: stats.pending.toString(),
+                        icon: Icons.pending_actions_rounded,
+                        iconColor: const Color(0xFFFF9800),
+                        iconBg: const Color(0xFFFF9800).withOpacity(0.1),
+                      ),
+                    ],
+                  ),
+                  loading: () => Row(
+                    children: List.generate(
+                        3,
+                        (_) => Expanded(
+                              child: Container(
+                                height: 90,
+                                margin: const EdgeInsets.only(right: 12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            )),
+                  ),
+                  error: (_, __) => const SizedBox.shrink(),
+                ),
+              ),
+            ),
+
+            // ── Today's Tasks Header ─────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
                       "Today's Tasks",
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    TextButton(
-                      onPressed: () => context.go('/list'),
-                      child: const Text('See All'),
+                    GestureDetector(
+                      onTap: () => context.go('/list'),
+                      child: const Text(
+                        'See all',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 8)),
-
-            // Today's Tasks List
+            // ── Today's Tasks List ───────────────────────────────────
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               sliver: todayTasksAsync.when(
                 data: (tasks) {
                   if (tasks.isEmpty) {
                     return SliverToBoxAdapter(
-                      child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 48),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(height: 32),
-                            Icon(
-                              Icons.task_alt,
-                              size: 64,
-                              color: Colors.grey[400],
-                            ),
+                            Icon(Icons.task_alt,
+                                size: 64, color: Colors.grey.shade300),
                             const SizedBox(height: 16),
                             Text(
                               'No tasks for today',
                               style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.w500,
-                              ),
+                                  fontSize: 16,
+                                  color: Colors.grey.shade500,
+                                  fontWeight: FontWeight.w500),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 6),
                             Text(
-                              'Enjoy your free time!',
+                              'Tap + to add a new task',
                               style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[500],
-                              ),
+                                  fontSize: 13, color: Colors.grey.shade400),
                             ),
                           ],
                         ),
                       ),
                     );
                   }
-
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
@@ -236,21 +223,17 @@ class HomeScreen extends ConsumerWidget {
                           onToggle: () {
                             final wasCompleted = task.isCompleted;
                             taskNotifier.toggleTaskCompletion(task.id);
-                            final messenger = ScaffoldMessenger.of(context);
-                            messenger.clearSnackBars();
-                            messenger.showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  wasCompleted
-                                      ? '↩ Task marked as pending'
-                                      : '✓ Task marked as complete',
-                                ),
+                            ScaffoldMessenger.of(context)
+                              ..clearSnackBars()
+                              ..showSnackBar(SnackBar(
+                                content: Text(wasCompleted
+                                    ? '↩ Marked as pending'
+                                    : '✓ Task completed'),
                                 duration: const Duration(seconds: 2),
                                 behavior: SnackBarBehavior.floating,
                                 backgroundColor:
                                     wasCompleted ? Colors.orange : Colors.green,
-                              ),
-                            );
+                              ));
                           },
                         );
                       },
@@ -260,11 +243,11 @@ class HomeScreen extends ConsumerWidget {
                 },
                 loading: () => SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (context, index) => const TaskCardSkeleton(),
+                    (_, __) => const TaskCardSkeleton(),
                     childCount: 3,
                   ),
                 ),
-                error: (error, stack) => SliverToBoxAdapter(
+                error: (error, _) => SliverToBoxAdapter(
                   child: Center(
                     child: Column(
                       children: [
@@ -278,107 +261,79 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 80)),
+            const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/add-task'),
         backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.white),
+        elevation: 4,
+        child: const Icon(Icons.add, color: Colors.white, size: 28),
       ),
-    );
-  }
-
-  Widget _buildStatItem(String label, String value, IconData icon) {
-    return Column(
-      children: [
-        Icon(icon, color: Colors.white, size: 24),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.white70,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatDivider() {
-    return Container(
-      height: 50,
-      width: 1,
-      color: Colors.white24,
     );
   }
 }
 
-/// TaskCardSkeleton - Loading placeholder
-class TaskCardSkeleton extends StatelessWidget {
-  const TaskCardSkeleton({super.key});
+/// Individual stat card — matches Figma white card with icon + number + label
+class _StatCard extends StatelessWidget {
+  final String label;
+  final String value;
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBg;
+
+  const _StatCard({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.iconColor,
+    required this.iconBg,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(6),
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 80,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  width: double.infinity,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ],
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                  color: iconBg, borderRadius: BorderRadius.circular(8)),
+              child: Icon(icon, color: iconColor, size: 18),
             ),
-          ),
-        ],
+            const SizedBox(height: 10),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style:
+                  const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            ),
+          ],
+        ),
       ),
     );
   }

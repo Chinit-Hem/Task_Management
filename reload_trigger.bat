@@ -1,3 +1,0 @@
-@echo off
-echo Sending hot reload...
-echo r

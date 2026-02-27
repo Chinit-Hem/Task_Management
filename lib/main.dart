@@ -1,26 +1,24 @@
 import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider;
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'core/constants/app_constants.dart';
 import 'core/routes/app_router.dart';
 import 'core/theme/app_theme.dart';
-import 'providers/user_session_provider.dart';
 import 'providers/theme_provider.dart';
+import 'providers/user_session_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize Firebase
   await Firebase.initializeApp();
-
-  // Catch Flutter framework errors and show on screen
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
     _showErrorApp(details.exceptionAsString(), details.stack.toString());
   };
-
   runZonedGuarded(
     () {
       runApp(
@@ -89,7 +87,6 @@ void _showErrorApp(String error, String stackTrace) {
   );
 }
 
-/// AuthWrapper - Checks authentication status and shows appropriate screen
 class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
@@ -107,13 +104,10 @@ class _MyAppState extends ConsumerState<MyApp> {
     _checkAuthStatus();
   }
 
-  /// Check if user is already logged in
   Future<void> _checkAuthStatus() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final isLoggedIn = prefs.getBool('is_logged_in') ?? false;
-
-      // Load saved theme preference
       if (mounted) {
         final themeProvider = provider.Provider.of<ThemeProvider>(
           context,
@@ -124,7 +118,6 @@ class _MyAppState extends ConsumerState<MyApp> {
           themeProvider.setThemeMode(ThemeMode.dark);
         }
       }
-
       if (mounted) {
         setState(() {
           _isLoggedIn = isLoggedIn;
@@ -132,7 +125,6 @@ class _MyAppState extends ConsumerState<MyApp> {
         });
       }
     } catch (e) {
-      print('Error checking auth status: $e');
       if (mounted) {
         setState(() {
           _isLoggedIn = false;
@@ -144,12 +136,11 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    // Show loading while checking auth
     if (_isLoading) {
       return const MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
-          backgroundColor: Colors.white, // Ensure white background
+          backgroundColor: Colors.white,
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -166,10 +157,7 @@ class _MyAppState extends ConsumerState<MyApp> {
         ),
       );
     }
-
-    // Get router with initial location based on auth status
     final router = AppRouter.getRouter(_isLoggedIn);
-
     return provider.Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp.router(

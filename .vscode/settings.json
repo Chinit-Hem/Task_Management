@@ -30,5 +30,35 @@
         "editor.tabCompletion": "onlySnippets",
         "editor.wordBasedSuggestions": "off"
     },
-    "cmake.sourceDirectory": "D:/TaskManagement/linux"
+    "cmake.sourceDirectory": "D:/TaskManagement/linux",
+    // Auto-save settings for hot reload
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
+    // Flutter specific settings
+    "dart.flutterHotReloadOnSave": "always",
+    "dart.hotReloadOnSave": "always",
+    "dart.previewFlutterUiGuides": true,
+    "dart.previewFlutterUiGuidesCustomTracking": true,
+    "dart.showInspectorNotificationsForWidgetErrors": true,
+    "dart.flutterGenerateDebugSymbols": true,
+    // Build runner settings
+    "dart.buildRunnerAdditionalArgs": [
+        "--delete-conflicting-outputs"
+    ],
+    // Editor settings for better performance
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    // Terminal settings
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    // File watching settings
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/*/**": true,
+        "**/.hg/store/**": true,
+        "**/build/**": true,
+        "**/.dart_tool/**": true
+    }
 }
